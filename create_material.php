@@ -27,13 +27,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mkdir($target_dir, 0777, true); // Create folder recursively with write permissions
     }
 
+    // Base URL for file access
+    $base_url = 'http://localhost/study_planner/';
+
     // Handle file upload if present
     if (!empty($_FILES['file']['name'])) {
         $file_name = time() . '_' . basename($_FILES["file"]["name"]);
         $target_file = $target_dir . $file_name;
 
         if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
-            $file_path = $target_file;
+            $file_path = $base_url . $target_file;
         } else {
             echo json_encode([
                 'status' => false,
@@ -59,8 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'due_date' => $due_date,
                 'due_time' => $due_time,
                 'file_path' => $file_path
-            ]
-            ]
+            ]]
         ]);
     } else {
         echo json_encode([

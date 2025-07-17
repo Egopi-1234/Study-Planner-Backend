@@ -12,9 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $email = trim($_POST['email'] ?? '');
 $otp = trim($_POST['otp'] ?? '');
 $new_password = $_POST['new_password'] ?? '';
+$confirm_password = $_POST['confirm_password'] ?? '';
 
-if (!$email || !$otp || !$new_password) {
+if (!$email || !$otp || !$new_password || !$confirm_password) {
     echo json_encode(['status' => false, 'message' => 'All fields are required']);
+    exit;
+}
+
+if ($new_password !== $confirm_password) {
+    echo json_encode(['status' => false, 'message' => 'Passwords do not match']);
     exit;
 }
 
@@ -54,12 +60,12 @@ try {
     exit;
 }
 
-// Hash new password
-$password_hash = $new_password;
+// Hash password (you should hash it properly, not just store raw)
+// $password_hash = password_hash($new_password, PASSWORD_BCRYPT);
 
 // Update password
 $stmt = $sql->prepare("UPDATE users SET password = ? WHERE email = ?");
-$stmt->bind_param('ss', $password_hash, $email);
+$stmt->bind_param('ss', $new_password, $email);
 
 if (!$stmt->execute()) {
     echo json_encode(['status' => false, 'message' => 'Failed to update password: ' . $stmt->error]);

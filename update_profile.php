@@ -5,7 +5,7 @@ require 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = $_POST['user_id'] ?? null;
-    $username = trim($_POST['username'] ?? '');
+    $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $Dept_info = trim($_POST['Dept_info'] ?? '');
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    if ($username === '' && $email === '' && $phone === '' && $Dept_info === '') {
+    if ($name === '' && $email === '' && $phone === '' && $Dept_info === '') {
         echo json_encode([
             'status' => false,
             'message' => 'At least one field is required to update',
@@ -41,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $profileImagePath = null;
     if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
         $tmp = $_FILES['profile_image']['tmp_name'];
-        $name = basename($_FILES['profile_image']['name']);
-        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $filename = basename($_FILES['profile_image']['name']);
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         $allowed = ['jpg', 'jpeg', 'png', 'gif'];
 
         if (!in_array($ext, $allowed)) {
@@ -65,11 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Build and execute the UPDATE SQL
     if ($profileImagePath) {
-        $stmt = $sql->prepare('UPDATE users SET username = ?, email = ?, phone = ?, Dept_info = ?, profile_image = ? WHERE id = ?');
-        $stmt->bind_param('sssssi', $username, $email, $phone, $Dept_info, $profileImagePath, $userId);
+        $stmt = $sql->prepare('UPDATE users SET name = ?, email = ?, phone = ?, Dept_info = ?, profile_image = ? WHERE id = ?');
+        $stmt->bind_param('sssssi', $name, $email, $phone, $Dept_info, $profileImagePath, $userId);
     } else {
-        $stmt = $sql->prepare('UPDATE users SET username = ?, email = ?, phone = ?, Dept_info = ? WHERE id = ?');
-        $stmt->bind_param('ssssi', $username, $email, $phone, $Dept_info, $userId);
+        $stmt = $sql->prepare('UPDATE users SET name = ?, email = ?, phone = ?, Dept_info = ? WHERE id = ?');
+        $stmt->bind_param('ssssi', $name, $email, $phone, $Dept_info, $userId);
     }
 
     if (!$stmt->execute()) {
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Fetch updated user data
-    $stmt = $sql->prepare('SELECT id, username, email, phone, Dept_info, profile_image FROM users WHERE id = ?');
+    $stmt = $sql->prepare('SELECT id, name, email, phone, Dept_info, profile_image FROM users WHERE id = ?');
     $stmt->bind_param('i', $userId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -87,8 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode([
         'status' => true,
         'message' => 'User updated successfully',
-        'data' => [ $user
-        ]
+        'data' => [ $user ]
     ]);
 } else {
     echo json_encode([

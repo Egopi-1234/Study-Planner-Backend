@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($username === '' || $email === '' || $password === '' || $confirmPassword === '') {
         echo json_encode([
             'status' => false,
-            'message'    => 'All fields are required',
-            'data'   => []
+            'message' => 'All fields are required',
+            'data' => []
         ]);
         exit;
     }
@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode([
             'status' => false,
-            'message'    => 'Invalid email address',
-            'data'   => []
+            'message' => 'Invalid email address',
+            'data' => []
         ]);
         exit;
     }
@@ -29,22 +29,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($password !== $confirmPassword) {
         echo json_encode([
             'status' => false,
-            'message'    => 'Passwords do not match',
-            'data'   => []
+            'message' => 'Passwords do not match',
+            'data' => []
         ]);
         exit;
     }
 
-    $stmt = $sql->prepare('SELECT id FROM users WHERE username = ? OR email = ?');
-    $stmt->bind_param('ss', $username, $email);
+    // Check only email, not username
+    $stmt = $sql->prepare('SELECT id FROM users WHERE email = ?');
+    $stmt->bind_param('s', $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
         echo json_encode([
             'status' => false,
-            'message'    => 'Username or email already taken',
-            'data'   => []
+            'message' => 'Email already taken',
+            'data' => []
         ]);
         exit;
     }
@@ -56,14 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = $insert->insert_id;
         echo json_encode([
             'status' => true,
-            'message'    => 'Registration successful',
-            'data'   => [
-                    'id'       => $id,
-                    'username' => $username,
-                    'email'    => $email,
-                    'pasword' => $password
-                
-              
+            'message' => 'Registration successful',
+            'data' => [
+                'id' => $id,
+                'username' => $username,
+                'email' => $email,
+                'password' => $password
             ]
         ]);
         exit;
@@ -71,14 +70,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     echo json_encode([
         'status' => false,
-        'message'    => 'Registration failed, please try again',
-        'data'   => []
+        'message' => 'Registration failed, please try again',
+        'data' => []
     ]);
     exit;
 }
 
 echo json_encode([
     'status' => false,
-    'message'    => 'Invalid request method',
-    'data'   => []
+    'message' => 'Invalid request method',
+    'data' => []
 ]);
