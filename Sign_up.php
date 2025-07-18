@@ -3,12 +3,12 @@ header('Content-Type: application/json');
 require 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username        = trim($_POST['username'] ?? '');
+    $name            = trim($_POST['name'] ?? '');
     $email           = trim($_POST['email'] ?? '');
     $password        = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
-    if ($username === '' || $email === '' || $password === '' || $confirmPassword === '') {
+    if ($name === '' || $email === '' || $password === '' || $confirmPassword === '') {
         echo json_encode([
             'status' => false,
             'message' => 'All fields are required',
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Check only email, not username
+    // Check only email uniqueness
     $stmt = $sql->prepare('SELECT id FROM users WHERE email = ?');
     $stmt->bind_param('s', $email);
     $stmt->execute();
@@ -50,8 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $insert = $sql->prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
-    $insert->bind_param('sss', $username, $email, $password);
+    // Insert into database (assumes column is named 'name' not 'username')
+    $insert = $sql->prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
+    $insert->bind_param('sss', $name, $email, $password);
 
     if ($insert->execute()) {
         $id = $insert->insert_id;
@@ -60,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'message' => 'Registration successful',
             'data' => [
                 'id' => $id,
-                'username' => $username,
+                'name' => $name,
                 'email' => $email,
                 'password' => $password
             ]

@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'message'    => 'Login successful',
             'data'   => [
                 'id' => $user['Id'],
-                'username' => $user['Username'],
+                'username' => $user['name'],
                 'email' => $user['email'],
                 'password' => $user['password']
             ]
