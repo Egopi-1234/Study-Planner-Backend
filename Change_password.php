@@ -35,7 +35,7 @@ try {
         exit;
     }
 
-    $stmt = $sql->prepare("SELECT id, username, email, password FROM users WHERE id = ?");
+    $stmt = $sql->prepare("SELECT id, name, email, password FROM users WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -65,10 +65,10 @@ try {
 
     echo json_encode([
         'status' => true,
-        'message' => 'Successfully',
+        'message' => 'Password changed successfully',
         'data' => [
             'id' => $user['id'],
-            'username' => $user['username'],
+            'name' => $user['name'],
             'email' => $user['email'],
             'password' => $new_password
         ]
