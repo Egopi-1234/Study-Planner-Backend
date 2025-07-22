@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $target_file = $target_dir . $file_name;
 
         if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
-            $file_path = $base_url . $target_file;
+            $file_path = $target_file;
         } else {
             echo json_encode([
                 'status' => false,
