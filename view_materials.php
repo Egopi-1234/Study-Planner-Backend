@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt = $sql->prepare("SELECT id, name, subject, due_date, due_time, file_path, created_at FROM materials WHERE user_id = ? ORDER BY due_date ASC, due_time ASC");
+    $stmt = $sql->prepare("SELECT id, name, subject, due_date, due_time, file_path, created_at ,status FROM materials WHERE user_id = ? ORDER BY due_date ASC, due_time ASC");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
