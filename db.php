@@ -3,8 +3,7 @@
 $host     = 'localhost';
 $user     = 'root';
 $password = '';
-$dbname   = 'study';
-$port     = 3306;  // ✅ your MySQL port
+$dbname   = 'study';  // ✅ your MySQL port
 
 $sql = new mysqli($host, $user, $password, $dbname, $port);
 
